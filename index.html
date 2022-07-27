@@ -35,7 +35,9 @@
       #map { 
         height: 600px;
         pointer-events: all;
+        z-index: 0;
       }
+      
       .tooltipFacades {
         color: #222;
         background: #fff;
@@ -66,6 +68,27 @@
       .layersize {
         font-size: 14px;
       }
+      .searchboxsmall {
+        position: absolute;
+        width:100%;
+        top: 58px;
+        left: 50%;
+        transform: translateX(-50%);
+        background-color: rgb(248, 248, 248);
+        z-index:1;
+        outline-width: 0;
+      }
+
+      .searchboxlarge {
+        position: absolute;
+        width:40%;
+        top: 65px;
+        left: 50%;
+        transform: translateX(-50%);
+        background-color: rgb(248, 248, 248);
+        z-index:1;
+        outline-width: 0;
+      }
       
     </style>
     <title>CWZ Locator</title>
@@ -94,11 +117,22 @@
             
       <div class="section no-pad-bot" id="index-banner">
         <div class="container">
-          <h3 class="header center green-text text-darken-2">Searching Bar</h3>
+          <div class="input-field col s12 searchboxlarge hide-on-small-only">
+            <!-- <i class="material-icons prefix blue-text">place</i> -->
+            <input class="center-align green-text text-darken-3 " placeholder="Input Your Address to Find Zone" id="icon_prefix" type="text" class="validate">
+            
+          </div>
+          <div class="input-field col s12 searchboxsmall hide-on-med-and-up">
+            <!-- <i class="material-icons prefix blue-text">place</i> -->
+            <input class="center-align green-text text-darken-3 " placeholder="Input Your Address to Find Zone" id="icon_prefix" type="text" class="validate">
+            
+          </div>
           <div class="row center">
             <div class="s12 col light" id="map"></div>
             
           </div>
+          
+          
           <div class="row center">
             <a href="http://materializecss.com/getting-started.html" id="download-button" class="btn-large waves-effect waves-light orange">Get Started</a>
           </div>
@@ -113,11 +147,18 @@
     <script src="js/dsnyPlannedCommercialWasteZones.js"></script>
     <script>
         $(document).ready(function(){
+          $('#textarea1').val('New Text');
+          M.textareaAutoResize($('#textarea1'));
 
           //prepare map
           var map = L.map('map', {center: [40.713312, -73.977407],
-                                  zoom: 11
+                                  zoom: 11,
+                                  zoomControl: false
                                  });
+          //add zoom control with your options
+          L.control.zoom({
+              position:'bottomleft'
+          }).addTo(map);
 
           //Stamen
           var stamen = L.tileLayer('https://stamen-tiles-{s}.a.ssl.fastly.net/toner-lite/{z}/{x}/{y}.png', {
@@ -189,22 +230,38 @@
           //create basemap for layout option and control
           var baseMaps = {
 
-            "<span class='green-text text-darken-4 layersize'>Street View</span>": googleStreets,
+            "<span class='left green-text text-darken-4 layersize'>Street</span>": googleStreets,
             // "Google Satellite Map": googleSat,
-            "<span class='green-text text-darken-4 layersize'>Hybrid View</span>": googleHybrid,
+            "<span class='left green-text text-darken-4 layersize'>Satellite</span>": googleHybrid,
             // "Google Terrain Map": googleTerrain,
             // "Esri Street Map": Esri_WorldStreetMap,
             // "Esri Topo Map": Esri_WorldTopoMap,
             // "Open Street Map": osm,
             // "Stamen Terrain Map": Stamen_Terrain,
             // "Stamen Street Map": stamen,
-            "<span class='green-text text-darken-4 layersize'>Bright View</span>": Stadia_OSMBright,
-            "<span class='green-text text-darken-4 layersize'>Dark View</span>": Stadia_AlidadeSmoothDark
+            // "<span class='green-text text-darken-4 layersize'>Bright View</span>": Stadia_OSMBright,
+            // "<span class='green-text text-darken-4 layersize'>Dark View</span>": Stadia_AlidadeSmoothDark
             
 
           };
 
+          //setup control to show zone info on hover
+          var info = L.control();
+          info.setPosition('bottomleft');
+
+          info.onAdd = function (map){
+            this._div = L.DomUtil.create('div', 'info');
+            this.update();
+            return this._div;
+          };
           
+
+          info.update = function(props){
+            this._div.innerHTML = '<h4>Commercial Waste Zone</h4>' + (props ?
+              '<b>' + props.zone : 'Hover over a zone');
+          };
+
+
           
 
          
@@ -213,21 +270,22 @@
             var layer = e.target;
 
             layer.setStyle({
-                weight: 1,
-                color: '#666',
+                weight: 1.2,
                 dashArray: '',
-                fillOpacity: 0.7
+                opacity: 0.8,
+                fillOpacity: 0.4
             });
 
             if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
                 layer.bringToFront();
-            }
+            };
+            info.update(layer.feature.properties);
         }
 
-        var geojson;
+        var zoneLayer;
 
         function resetHighlight(e) {
-            geojson.resetStyle(e.target);
+            zoneLayer.resetStyle(e.target);
         }
 
         function zoomToFeature(e) {
@@ -368,7 +426,7 @@
           };
 
         //get zone layout data and styles
-        var zoneLayer = L.geoJson(zone, {style: zoneOptions,onEachFeature: onEachFeature});        
+        zoneLayer = L.geoJson(zone, {style: zoneOptions,onEachFeature: onEachFeature});        
 
         //create layout control
         var overlayMaps = {
@@ -378,8 +436,9 @@
 
         
         //add default layout and map
-        var layerControl = L.control.layers(baseMaps, overlayMaps).addTo(map);
-          googleStreets.addTo(map);
+        var layerControl = L.control.layers(baseMaps, overlayMaps, {position: 'bottomright'}).addTo(map);
+        googleStreets.addTo(map);
+        info.addTo(map);  
                   
 
       });
