@@ -33,7 +33,8 @@
           top:0.2em;
       }
       #map { 
-        height: 650px;
+        min-height: 600px;
+        height: auto;
         pointer-events: all;
         z-index: 0;
       }
@@ -68,16 +69,17 @@
       .layersize {
         font-size: 14px;
       }
+      
       .searchboxsmall {
         position: absolute;
         width:100%;
         top: 50px;
         left: 50%;
         transform: translateX(-50%);
-        background-color: rgb(248, 248, 248);
+        background-color: white;
         z-index:1;
         outline-width: 0;
-        opacity: 0.8;
+        
       }
 
       .searchboxlarge {
@@ -86,10 +88,10 @@
         top: 65px;
         left: 50%;
         transform: translateX(-50%);
-        background-color: rgb(248, 248, 248);
+        background-color: white;
         z-index:1;
         outline-width: 0;
-        opacity: 0.8;
+       
       }
       
     </style>
@@ -120,13 +122,13 @@
       <div class="section no-pad-bot" id="index-banner">
         <div class="container">
           <div class="input-field col s12 searchboxlarge hide-on-small-only">
-            <!-- <i class="material-icons prefix blue-text">place</i> -->
-            <input class="center-align green-text text-darken-3 " placeholder="Input Your Address to Find Zone" id="icon_prefix" type="text" class="validate">
+            <i class="material-icons prefix green-text text-darken-3">place</i>
+            <input class="center-align green-text text-darken-4 inputtext" style="font-size:15pt" placeholder="Input Your Address to Find Zone" id="icon_prefix" type="text" class="validate">
             
           </div>
           <div class="input-field col s12 searchboxsmall hide-on-med-and-up">
-            <!-- <i class="material-icons prefix blue-text">place</i> -->
-            <input class="center-align green-text text-darken-3 " placeholder="Input Your Address to Find Zone" id="icon_prefix" type="text" class="validate">
+            <i class="material-icons prefix green-text text-darken-3">place</i>
+            <input class="center-align green-text text-darken-4 inputtext" style="font-size:15pt" placeholder="Input Your Address to Find Zone" id="icon_prefix" type="text" class="validate">
             
           </div>
           <div class="row center">
@@ -149,9 +151,9 @@
     <script src="js/dsnyPlannedCommercialWasteZones.js"></script>
     <script>
         $(document).ready(function(){
-          $('#textarea1').val('New Text');
-          M.textareaAutoResize($('#textarea1'));
+          
 
+          /* Leaflet js Map ***************************************************************************************************************/
           //prepare map
           var map = L.map('map', {center: [40.713312, -73.977407],
                                   zoom: 11,
@@ -259,6 +261,7 @@
           
 
           info.update = function(props){
+            var carters = 
             this._div.innerHTML = '<h4>Commercial Waste Zone</h4>' + (props ?
               '<b>' + props.zone : 'Hover over a zone');
           };
