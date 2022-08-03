@@ -454,21 +454,30 @@
           .on("markgeocode", function (e) {
             latlng = e.geocode.center;
             var popup = L.popup().setContent(e.geocode.name + " " + latlng);
-            alert(latlng);
+            console.log(latlng)
+            // Add a way to identify zone name and print it on the popup 
+            // can use latlng.lat to get just the lat number, same for lng
+
 
 
             L.marker(latlng, )
               .addTo(map)
               .bindPopup(popup)
               .openPopup()
-              .getLatLng();
-              alert
+              .getLatLng({});
+              
             
             map.fitBounds(e.geocode.bbox);
             
           })
           .addTo(map);
           
+          //Get lat long on click
+          map.on('click', function(e) {
+            alert("Lat, Lon : " + e.latlng.lat + ", " + e.latlng.lng)
+          });
+
+      
       
 
         
