@@ -439,7 +439,7 @@
         var layerControl = L.control.layers(baseMaps, overlayMaps,  {position: 'bottomright'}).addTo(map);
         googleStreets.addTo(map);
         map.addLayer(zoneLayer);
-         //info.addTo(map); 
+         info.addTo(map); 
         
         
         
@@ -453,8 +453,13 @@
         })
           .on("markgeocode", function (e) {
             latlng = e.geocode.center;
-            var popup = L.popup().setContent(e.geocode.name + " " + latlng);
-            console.log(latlng)
+            let coordinates = [latlng.lat, latlng.lng]
+            coordinates = coordinates.map(function(each_element){
+              return Number(each_element.toFixed(2));
+            });
+
+
+            var popup = L.popup().setContent(e.geocode.name + " " + "Coordinates: " + coordinates);
             // Add a way to identify zone name and print it on the popup 
             // can use latlng.lat to get just the lat number, same for lng
 
@@ -473,9 +478,10 @@
           .addTo(map);
           
           //Get lat long on click
+          /*
           map.on('click', function(e) {
             alert("Lat, Lon : " + e.latlng.lat + ", " + e.latlng.lng)
-          });
+          }); */
 
       
       
